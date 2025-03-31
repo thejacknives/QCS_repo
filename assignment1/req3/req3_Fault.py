@@ -1,35 +1,45 @@
-
 def tyre_pressure_warning(pressures, target_pressure):
     tyre_averages = []
 
     for i, tyre_readings in enumerate(pressures):
-        # Filter out invalid readings (0, negative, or too large)-> !!!! input validation / filtering
-        valid_readings = [p for p in tyre_readings if 0 < p < 100 ]
+        print(f"\n--- Processing Tyre {i} ---")
 
-        #warning if tire doesnt have ANY valid readings i.e average cant be calculated.
+        # Step 1: Input validation
+        valid_readings = [p for p in tyre_readings if 0 < p < 100]
         if not valid_readings:
             print(f"[Warning] Tyre {i} has no valid readings, skipping.")
             continue
-        
-        # Step 2: Remove outliers
+
+        # Step 2: Outlier removal
         cleaned = remove_outliers(valid_readings)
         if len(cleaned) == 0:
-            #unlikely to happen, but if all readings are outliers, skip
             print(f"[Warning] Tyre {i} has only outlier readings, skipping.")
             continue
 
-        average = sum(valid_readings) / len(valid_readings)
+        # Step 3: DMR simulation - compute average in two identical modules
+        avg_module_1 = sum(cleaned) / len(cleaned)
+        avg_module_2 = sum(cleaned) / len(cleaned)  # Normally this would be another "independent" module
+        #UNCOMMENT TO FORCE DMR ERROR
+        #if i == 1:
+            #avg_module_2 += 1  # simulate fault in module 2
 
-        if average < target_pressure:
-            tyre_averages.append((i, average))
 
-    # Sort by average pressure
+        if abs(avg_module_1 - avg_module_2) > 0.001:
+            print(f"[DMR ERROR] Disagreement between modules on Tyre {i}: {avg_module_1} vs {avg_module_2}")
+            continue  # DMR detected error, skip this tyre
+        else:
+            print(f"[DMR OK] Tyre {i} average = {avg_module_1:.2f}")
+
+        # Step 4: Threshold check
+        if avg_module_1 < target_pressure:
+            tyre_averages.append((i, avg_module_1))
+
+    # Final sorting of low-pressure tyres
     tyre_averages.sort(key=lambda x: x[1])
-
     return [i for i, _ in tyre_averages]
 
 
-def remove_outliers(readings, threshold_ratio=0.5):
+def remove_outliers(readings, threshold_ratio=0.75):
     if len(readings) < 3:
         return readings  # Not enough data to detect outliers
 
