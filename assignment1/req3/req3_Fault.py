@@ -2,7 +2,7 @@ def tyre_pressure_warning(pressures, target_pressure):
     tyre_averages = []
 
     for i, tyre_readings in enumerate(pressures):
-        print(f"\n--- Processing Tyre {i} ---")
+        #print(f"\n--- Processing Tyre {i} ---")
 
         # Step 1: Input validation
         valid_readings = [p for p in tyre_readings if 0 < p < 100]
@@ -18,7 +18,7 @@ def tyre_pressure_warning(pressures, target_pressure):
 
         # Step 3: DMR simulation - compute average in two identical modules
         avg_module_1 = sum(cleaned) / len(cleaned)
-        avg_module_2 = sum(cleaned) / len(cleaned)  # Normally this would be another "independent" module
+        avg_module_2 = sum(cleaned) / len(cleaned)  
         #UNCOMMENT TO FORCE DMR ERROR
         #if i == 1:
             #avg_module_2 += 1  # simulate fault in module 2
@@ -27,8 +27,8 @@ def tyre_pressure_warning(pressures, target_pressure):
         if abs(avg_module_1 - avg_module_2) > 0.001:
             print(f"[DMR ERROR] Disagreement between modules on Tyre {i}: {avg_module_1} vs {avg_module_2}")
             continue  # DMR detected error, skip this tyre
-        else:
-            print(f"[DMR OK] Tyre {i} average = {avg_module_1:.2f}")
+        #else:
+            #print(f"[DMR OK] Tyre {i} average = {avg_module_1:.2f}")
 
         # Step 4: Threshold check
         if avg_module_1 < target_pressure:
