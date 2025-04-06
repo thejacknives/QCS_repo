@@ -1,4 +1,3 @@
-
 # nvp_runner.py
 from req3_Fault import tyre_pressure_warning as fault_tolerance_version
 from Re3_tomas_tavares import tyre_pressure as n_version2
@@ -39,9 +38,17 @@ with open("v2_output.txt", "w") as f:
 # Compare and print results
 print("\n--- N-Version Comparator ---")
 for i, (out1, out2) in enumerate(zip(ft_outputs, v2_outputs)):
-    if out1 != out2:
-        print(f"[WARNING] Output mismatch in Test Case {i+1}")
+    attempts = 1
+    while out1 != out2 and attempts <= 3:
+        print(f"[WARNING] Output mismatch in Test Case {i+1} (Attempt {attempts})")
         print(f"  Fault-Tolerant: {out1}")
         print(f"  V2 Version:     {out2}")
-    else:
+        if attempts == 3:
+            print(f"[ERROR] Persistent mismatch in Test Case {i+1} after 3 attempts.")
+            break
+        # Re-run the test case
+        out1 = fault_tolerance_version(pressures[i], targets[i])
+        out2 = n_version2([pressures[i]], [targets[i]])[0]
+        attempts += 1
+    if out1 == out2:
         print(f"[OK] Test Case {i+1} → Output: {out1}")

@@ -13,8 +13,8 @@ test_cases = [
 pressures = [case[0] for case in test_cases]
 target = [case[1] for case in test_cases]
 
-print (pressures)
-print (target)
+#print (pressures)
+#print (target)
 
 def tyre_pressure(pressures, target_pressures):
     means = mean_pressures(pressures)
