@@ -4,19 +4,16 @@ def tyre_pressure_warning(pressures, target_pressure):
     for i, tyre_readings in enumerate(pressures):
         #print(f"\n--- Processing Tyre {i} ---")
 
-        # Step 1: Input validation
         valid_readings = [p for p in tyre_readings if 0 < p < 100]
         if not valid_readings:
             print(f"[Warning] Tyre {i} has no valid readings, skipping.")
             continue
 
-        # Step 2: Outlier removal
         cleaned = remove_outliers(valid_readings)
         if len(cleaned) == 0:
             print(f"[Warning] Tyre {i} has only outlier readings, skipping.")
             continue
 
-        # Step 3: DMR simulation - compute average in two identical modules
         avg_module_1 = sum(cleaned) / len(cleaned)
         avg_module_2 = sum(cleaned) / len(cleaned)  
         #UNCOMMENT TO FORCE DMR ERROR
@@ -30,7 +27,6 @@ def tyre_pressure_warning(pressures, target_pressure):
         #else:
             #print(f"[DMR OK] Tyre {i} average = {avg_module_1:.2f}")
 
-        # Step 4: Threshold check
         if avg_module_1 < target_pressure:
             tyre_averages.append((i, avg_module_1))
 
@@ -71,9 +67,9 @@ print("6->" ,tyre_pressure_warning([[0, -2, 200], [15, 15], [8, 9]], 10))
 
 # for outlier detection. ->ignoring 100, etc.
 print("7->" ,tyre_pressure_warning([
-    [10, 10, 10, 1],     # 1000 is clearly an outlier now
+    [10, 10, 10, 1],     
     [30, 30, 30],
-    [0, 30, 10, 12],       # 0 ignored, 100 might get flagged
+    [0, 30, 10, 12],     
     [10, 11, 12]
 ], 25))
 
